@@ -1,85 +1,49 @@
-var $tbody = document.querySelector("tbody");
-var $timeInput = document.querySelector("#date");
-var $cityInput = document.querySelector("#city");
-var $stateInput = document.querySelector("#state");
-var $countryInput = document.querySelector("#country");
-var $shapeInput = document.querySelector("#shape");
-var $searchBtn = document.querySelector("#search");
-
-var $loadMoreBtn = document.querySelector("#pagination");
-
-var startingIndex = 0;
-var resultsPerPage = 50;
+const inputData = data; // from the file 
 
 
-$searchBtn.addEventListener("click", handleSearchButtonClick);
+function renderTable(input_data) {
+    input_data.forEach(element => {
+        let newTr = d3.select('table').append('tr')
+        newTr.append('td').text(element.datetime)
+        newTr.append('td').text(element.city)
+        newTr.append('td').text(element.state)
+        newTr.append('td').text(element.country)
+        newTr.append('td').text(element.shape)
+        newTr.append('td').text(element.durationMinutes)
+        newTr.append('td').text(element.comments)
+    })
+} // end renderTable
+
+renderTable(inputData) // render it from the global data variable
 
 
-var filteredDataSet = dataSet;
+function filterTable(e) {
+    e.preventDefault();
+    console.log(e.target.value)
+
+    var filter = e.target.value;
+    console.log(filter, 'IS THE FILTER')
+    let rows = document.getElementById("ufo-table").rows
+
+    for (var i = 0; i < rows.length; i++) {
+        var firstCol = rows[i].cells[0].textContent;
+        var secondCol = rows[i].cells[1].textContent;
+        var thirdCol = rows[i].cells[2].textContent;
+        var fourthCol = rows[i].cells[3].textContent;
+        var fifthCol = rows[i].cells[4].textContent;
+        var sixthCol = rows[i].cells[5].textContent;
+        var seventhCol = rows[i].cells[6].textContent;
 
 
-function renderTable() {
-    $tbody.innerHTML = "";
-    for (var i = 0; i < filteredDataSet.length; i++) {
 
-        
-        var data = filteredDataSet[i];
-        var fields = Object.keys(data);
 
-        
-        var $row = $tbody.insertRow(i);
-        for (var j = 0; j < fields.length; j++) {
 
-        
-            var field = fields[j];
-            var $cell = $row.insertCell(j);
-            $cell.innerText = data[field];
+        if (firstCol.indexOf(filter) > -1 || secondCol.indexOf(filter) > -1 || thirdCol.indexOf(filter) > -1 || fourthCol.indexOf(filter) > -1 || fifthCol.indexOf(filter) > -1 || sixthCol.indexOf(filter) > -1 || seventhCol.indexOf(filter) > -1) {
+            rows[i].style.display = "";
+        } else {
+            rows[i].style.display = "none";
         }
     }
 }
 
-function handleSearchButtonClick() {
-
-    
-    var filterDateTime = $timeInput.value.trim().toLowerCase();
-    var filterCity = $cityInput.value.trim().toLowerCase();
-    var filterCountry = $countryInput.value.trim().toLowerCase();
-    var filterState = $stateInput.value.trim().toLowerCase();
-    var filterShape = $shapeInput.value.trim().toLowerCase();
-
-   
-    filteredDataSet = dataSet.filter(function (data) {
-        var dateTimeField = data.datetime.toLowerCase();
-        var cityField = data.city.toLowerCase();
-        var stateField = data.state.toLowerCase();
-        var countryField = data.country.toLowerCase();
-        var shapeField = data.shape.toLowerCase();
-
-        var allFields =
-            (filterDateTime === "" || dateTimeField === filterDateTime) &&
-            (filterCity === "" || cityField === filterCity) &&
-            (filterCountry === "" || countryField === filterCountry) &&
-            (filterState === "" || stateField === filterState) &&
-            (filterShape === "" || shapeField === filterShape);
-        return allFields;
-
-    });
-    renderTable();
-}
-
-$loadMoreBtn.addEventListener("click", handleButtonClick);
-
-function handleButtonClick() {
-    startingIndex += resultsPerPage;
-    renderTable();
-
-    if (startingIndex + resultsPerPage >= filteredDataSet.length) {
-        $loadMoreBtn.classList.add("disabled");
-        $loadMoreBtn.innerText = "All Data Loaded";
-        $loadMoreBtn.removeEventListener("click", handleButtonClick);
-    }
-}
-
-
-renderTable();
-
+document.getElementById('filterValue').addEventListener('keyup', filterTable, false);  
